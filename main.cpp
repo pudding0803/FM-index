@@ -10,10 +10,10 @@ int main() {
     const auto positions = index.locate(pattern);
 
     std::cout << "Count: " << count << std::endl;
-    std::cout << "Locate:";
+    std::cout << "Locate: [";
     for (const auto& pos : positions) {
         std::cout << ' ' << pos;
     }
-    std::cout << std::endl;
+    std::cout << " ]" << std::endl;
     return 0;
 }

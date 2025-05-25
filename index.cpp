@@ -12,15 +12,17 @@ size_t FMIndex::count(std::string_view pattern) const noexcept {
 std::vector<size_t> FMIndex::locate(std::string_view pattern) const noexcept {
     const auto range = getMatchRange(pattern);
     if (!range) return {};
+
     std::vector<size_t> result;
     result.reserve(range->second - range->first);
+
     for (size_t i = range->second; i-- > range->first;) {
         size_t pos = i, steps = 0;
-        while (this->bwt[pos]) {
-            pos = this->lfMapping(pos);
+        while (this->sampleToText[pos] == npos) {
+            pos = lfMapping(pos);
             ++steps;
         }
-        result.emplace_back(steps);
+        result.emplace_back(this->sampleToText[pos] + steps);
     }
     return result;
 }
@@ -30,12 +32,20 @@ void FMIndex::build(std::string&& s) {
     s.push_back(0);
     this->textSize = s.size();
 
-    this->bwt.reserve(textSize);
-    for (const auto& i : sa) {
-        this->bwt.push_back(i > 0 ? s[i - 1] : 0);
-    }
-    std::set<char> charset(s.begin(), s.end());
+    this->sampleToText.assign(textSize, npos);
+    this->textToSample.assign(textSize, npos);
 
+    this->bwt.resize(textSize);
+    for (size_t i = 0; i < this->textSize; ++i) {
+        size_t j = sa[i];
+        this->bwt[i] = j > 0 ? s[j - 1] : 0;
+        if (j % FMIndex::sampleRate == 0) {
+            this->sampleToText[i] = j;
+            this->textToSample[j] = i;
+        }
+    }
+
+    std::set<char> charset(s.begin(), s.end());
     for (const auto& key : charset) {
         this->occ[key].assign(this->textSize, 0);
     }
