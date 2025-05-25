@@ -9,7 +9,7 @@
 class SAIS {
 public:
     template <typename T>
-    [[nodiscard]] static std::vector<int> buildSA(std::vector<T> v);
+    [[nodiscard]] static std::vector<size_t> buildSA(std::vector<T> v);
 
 private:
     enum class Type : char {
@@ -40,10 +40,10 @@ private:
     static void induceSA(
         const std::vector<T>&,
         const std::vector<Type>&,
-        const std::vector<int>&,
+        const std::vector<size_t>&,
         std::map<T, Bucket<T>>&,
         const std::map<T, size_t>&,
-        std::vector<int>&
+        std::vector<size_t>&
     ) noexcept;
 };
 

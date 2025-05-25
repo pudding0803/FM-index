@@ -1,11 +1,11 @@
 template <typename T>
-std::vector<int> SAIS::buildSA(std::vector<T> v) {
+std::vector<size_t> SAIS::buildSA(std::vector<T> v) {
     v.emplace_back(0);
     const size_t size = v.size();
 
     std::vector<Type> types(size);
     types[size - 1] = Type::S;
-    std::vector<int> lmsArr;
+    std::vector<size_t> lmsArr;
     for (size_t i = size - 1; i-- > 0;) {
         if (v[i] < v[i + 1]) types[i] = Type::S;
         else if (v[i] > v[i + 1]) types[i] = Type::L;
@@ -25,17 +25,17 @@ std::vector<int> SAIS::buildSA(std::vector<T> v) {
     }
     std::map<T, Bucket<T>> buckets;
 
-    std::vector<int> sa(size, -1);
+    std::vector<size_t> sa(size, -1);
     SAIS::induceSA(v, types, lmsArr, buckets, freq, sa);
 
-    std::vector<int> indices(size, -1);
+    std::vector<size_t> indices(size, -1);
     for (size_t i = 0; i < lmsNum; ++i) {
         indices[lmsArr[i]] = i;
     }
 
-    std::vector<int> ranks(lmsNum, -1);
-    int rank = 0;
-    int prev = size;
+    std::vector<size_t> ranks(lmsNum, -1);
+    size_t rank = 0;
+    size_t prev = size;
     for (size_t i = 0; i < size; ++i) {
         if (types[sa[i]] == Type::LMS) {
             if (!SAIS::isSameSubstring(v, types, prev, sa[i])) ++rank;
@@ -46,7 +46,7 @@ std::vector<int> SAIS::buildSA(std::vector<T> v) {
 
     if (rank != lmsNum) {
         auto result = SAIS::buildSA(ranks);
-        std::vector<int> sortedLMS(lmsNum);
+        std::vector<size_t> sortedLMS(lmsNum);
         for (size_t i = 0; i < lmsNum; ++i) {
             sortedLMS[i] = lmsArr[result[i + 1]];
         }
@@ -81,7 +81,7 @@ void SAIS::resetBuckets(
     std::map<T, Bucket<T>>& buckets,
     const std::map<T, size_t>& freq
 ) noexcept {
-    int acc = 0;
+    size_t acc = 0;
     for (const auto& [c, count] : freq) {
         buckets[c].begin = acc;
         acc += count;
@@ -93,33 +93,35 @@ template <typename T>
 void SAIS::induceSA(
     const std::vector<T>& v,
     const std::vector<Type>& types,
-    const std::vector<int>& lmsArr,
+    const std::vector<size_t>& lmsArr,
     std::map<T, Bucket<T>>& buckets,
     const std::map<T, size_t>& freq,
-    std::vector<int>& sa
+    std::vector<size_t>& sa
 ) noexcept {
+    constexpr size_t npos = std::numeric_limits<size_t>::max();
+
     const size_t size = v.size(), lmsNum = lmsArr.size();
     SAIS::resetBuckets(buckets, freq);
     std::ranges::fill(sa, -1);
     for (size_t i = lmsNum; i-- > 0;) {
-        int j = lmsArr[i];
+        size_t j = lmsArr[i];
         sa[--buckets[v[j]].end] = j;
     }
     for (size_t i = 0; i < size; ++i) {
-        int j = sa[i] - 1;
-        if (j >= 0 && sa[i] != -1 && types[j] == Type::L) {
+        size_t j = sa[i] - 1;
+        if (j != npos && sa[i] != -1 && types[j] == Type::L) {
             sa[buckets[v[j]].begin++] = j;
         }
     }
     for (size_t i = 0; i < size; ++i) {
-        int j = sa[i];
-        if (j >= 1 && types[j] != Type::L && types[j - 1] == Type::L) {
+        size_t j = sa[i];
+        if (j != npos && types[j] != Type::L && types[j - 1] == Type::L) {
             ++buckets[v[j]].end;
         }
     }
     for (size_t i = size; i-- > 0;) {
-        int j = sa[i] - 1;
-        if (j >= 0 && sa[i] != -1 && types[j] != Type::L) {
+        size_t j = sa[i] - 1;
+        if (j != npos && sa[i] != -1 && types[j] != Type::L) {
             sa[--buckets[v[j]].end] = j;
         }
     }

@@ -3,8 +3,7 @@
 
 int main() {
     std::string s = "mmiissiissiippii";
-    FMIndex index;
-    index.build(s);
+    FMIndex index(s);
 
     std::string_view pattern = "issii";
     const auto count = index.count(pattern);

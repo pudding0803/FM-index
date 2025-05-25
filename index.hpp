@@ -9,18 +9,18 @@
 
 class FMIndex {
 public:
-    FMIndex() = default;
+    explicit FMIndex(std::string);
 
-    void build(std::string&);
     [[nodiscard]] size_t count(std::string_view) const noexcept;
     [[nodiscard]] std::vector<size_t> locate(std::string_view) const noexcept;
 
 private:
-    size_t size;
+    size_t textSize;
     std::string bwt;
     std::unordered_map<char, int> c;
     std::unordered_map<char, std::vector<int>> occ;
 
-    std::optional<std::pair<size_t, size_t>> matchRange(std::string_view) const noexcept;
-    size_t lf(size_t) const;
+    void build(std::string&&);
+    std::optional<std::pair<size_t, size_t>> getMatchRange(std::string_view) const noexcept;
+    size_t lfMapping(size_t) const;
 };
