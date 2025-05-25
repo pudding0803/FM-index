@@ -16,10 +16,9 @@ private:
         L, LMS, S
     };
 
-    template <typename T>
     struct Bucket {
-        T begin{};
-        T end{};
+        size_t begin{};
+        size_t end{};
     };
 
     template <typename T>
@@ -32,7 +31,7 @@ private:
 
     template <typename T>
     inline static void resetBuckets(
-        std::map<T, Bucket<T>>&,
+        std::map<T, Bucket>&,
         const std::map<T, size_t>&
     ) noexcept;
 
@@ -41,7 +40,7 @@ private:
         const std::vector<T>&,
         const std::vector<Type>&,
         const std::vector<size_t>&,
-        std::map<T, Bucket<T>>&,
+        std::map<T, Bucket>&,
         const std::map<T, size_t>&,
         std::vector<size_t>&
     ) noexcept;

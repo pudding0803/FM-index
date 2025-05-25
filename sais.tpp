@@ -23,7 +23,7 @@ std::vector<size_t> SAIS::buildSA(std::vector<T> v) {
     for (const auto& c : v) {
         ++freq[c];
     }
-    std::map<T, Bucket<T>> buckets;
+    std::map<T, Bucket> buckets;
 
     std::vector<size_t> sa(size, -1);
     SAIS::induceSA(v, types, lmsArr, buckets, freq, sa);
@@ -78,7 +78,7 @@ bool SAIS::isSameSubstring(
 
 template <typename T>
 void SAIS::resetBuckets(
-    std::map<T, Bucket<T>>& buckets,
+    std::map<T, Bucket>& buckets,
     const std::map<T, size_t>& freq
 ) noexcept {
     size_t acc = 0;
@@ -94,7 +94,7 @@ void SAIS::induceSA(
     const std::vector<T>& v,
     const std::vector<Type>& types,
     const std::vector<size_t>& lmsArr,
-    std::map<T, Bucket<T>>& buckets,
+    std::map<T, Bucket>& buckets,
     const std::map<T, size_t>& freq,
     std::vector<size_t>& sa
 ) noexcept {
