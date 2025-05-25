@@ -1,5 +1,5 @@
 #include <iostream>
-#include "index.hpp"
+#include "fm_index.hpp"
 
 int main() {
     std::string s = "mmiissiissiippii";

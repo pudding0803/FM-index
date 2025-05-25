@@ -1,4 +1,4 @@
-#include "index.hpp"
+#include "fm_index.hpp"
 
 FMIndex::FMIndex(std::string s) {
     this->build(std::move(s));
